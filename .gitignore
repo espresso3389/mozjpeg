@@ -46,3 +46,6 @@ Makefile
 test_yuv*.jpg
 CMakeCache.txt
 CTestTestfile.cmake
+
+**/*.app/**
+**/CMakeFiles/*.dir/**

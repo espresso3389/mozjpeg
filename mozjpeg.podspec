@@ -1,21 +1,22 @@
 Pod::Spec.new do |spec|
   spec.name = "mozjpeg"
-  spec.version = "3.3.1"
+  spec.version = "4.0.3"
   spec.license = { :type => "BSD" }
-  spec.homepage = "https://github.com/mozilla/mozjpeg"
+  spec.homepage = "https://github.com/espresso3389/mozjpeg"
   spec.summary = "Improved JPEG encoder."
   spec.authors = "Mozilla"
-  spec.source = { :git => "https://github.com/mozilla/mozjpeg.git", :tag => "v#{spec.version}" }
+  spec.source = { :git => "https://github.com/espresso3389/mozjpeg.git", :tag => "v#{spec.version}" }
   spec.module_name = "mozjpeg"
   spec.header_dir = "mozjpeg"
-  spec.platforms = { :ios => "8.0" }
+  spec.platforms = { :ios => "11.0" }
   spec.prepare_command = <<-CMD
     cat << EOF > jconfig.h
-    #define JPEG_LIB_VERSION  80	/* Version 6b */
-    #define LIBJPEG_TURBO_VERSION 3.1.m
-    #define LIBJPEG_TURBO_VERSION_NUMBER 1
+    #define JPEG_LIB_VERSION  62
+    #define LIBJPEG_TURBO_VERSION  4.1.0
+    #define LIBJPEG_TURBO_VERSION_NUMBER  4001000
     #define C_ARITH_CODING_SUPPORTED 1
     #define D_ARITH_CODING_SUPPORTED 1
+    #define MEM_SRCDST_SUPPORTED 1
     #define BITS_IN_JSAMPLE  8
     #define HAVE_LOCALE_H 1
     #define HAVE_STDDEF_H 1
@@ -23,27 +24,27 @@ Pod::Spec.new do |spec|
     #define HAVE_UNSIGNED_CHAR 1
     #define HAVE_UNSIGNED_SHORT 1
     #define NEED_SYS_TYPES_H 1
-    #define WITH_SIMD 0
+    #define WITH_SIMD 1
     EOF
 
 
     cat << EOF > jconfigint.h
-    #define BUILD "20180328"
-    #define INLINE __attribute__((always_inline))
-    #define PACKAGE_NAME "mozjpeg"
+    #define BUILD  "20210924"
+    #undef inline
+    #define INLINE  __inline__ __attribute__((always_inline))
+    #define THREAD_LOCAL  
+    #define PACKAGE_NAME  "mozjpeg"
     #define VERSION "#{spec.version}"
     #ifdef __SIZEOF_SIZE_T__
       #define SIZEOF_SIZE_T __SIZEOF_SIZE_T__
     #else
       #error Cannot determine the size of size_t
     #endif
+    #define HAVE_BUILTIN_CTZL
     EOF
   CMD
 
-  spec.private_header_files = "bmp.h",
-                              "cderror.h",
-                              "cdjpeg.h",
-                              "jchuff.h",
+  spec.private_header_files = "jchuff.h",
                               "jcmaster.h",
                               "jconfigint.h",
                               "jdcoefct.h",
@@ -51,14 +52,14 @@ Pod::Spec.new do |spec|
                               "jdhuff.h",
                               "jdmainct.h",
                               "jdmaster.h",
+                              "jdmerge.h",
                               "jdsample.h",
                               "jmemsys.h",
                               "jpeg_nbits_table.h",
                               "jpegcomp.h",
                               "jsimd.h",
                               "jsimddct.h",
-                              "jversion.h",
-                              "wrppm.h"
+                              "jversion.h"
 
   spec.public_header_files = "jerror.h",
                              "jinclude.h",
@@ -66,15 +67,17 @@ Pod::Spec.new do |spec|
                              "jmorecfg.h",
                              "jpeglib.h",
                              "jpegint.h",
-                             "transupp.h"
+                             "transupp.h",
+                             "turbojpeg.h"
 
   spec.source_files = "jcapimin.c",
                       "jcapistd.c",
                       "jccoefct.c",
                       "jccolor.c",
                       "jcdctmgr.c",
-                      "jcext.c",
                       "jchuff.c",
+                      "jcext.c",
+                      "jcicc.c",
                       "jcinit.c",
                       "jcmainct.c",
                       "jcmarker.c",
@@ -93,6 +96,7 @@ Pod::Spec.new do |spec|
                       "jdcolor.c",
                       "jddctmgr.c",
                       "jdhuff.c",
+                      "jdicc.c",
                       "jdinput.c",
                       "jdmainct.c",
                       "jdmarker.c",
@@ -114,12 +118,13 @@ Pod::Spec.new do |spec|
                       "jquant2.c",
                       "jutils.c",
                       "jmemmgr.c",
+                      "jmemnobs.c",
                       "jaricom.c",
                       "jcarith.c",
                       "jdarith.c",
-                      "transupp.c",
-                      "jmemnobs.c",
                       "jsimd_none.c",
+                      "transupp.c",
+
                       "jerror.h",
                       "jinclude.h",
                       "jconfig.h",
@@ -127,9 +132,8 @@ Pod::Spec.new do |spec|
                       "jpeglib.h",
                       "jpegint.h",
                       "transupp.h",
-                      "bmp.h",
-                      "cderror.h",
-                      "cdjpeg.h",
+                      "turbojpeg.h",
+
                       "jchuff.h",
                       "jcmaster.h",
                       "jconfigint.h",
@@ -138,14 +142,15 @@ Pod::Spec.new do |spec|
                       "jdhuff.h",
                       "jdmainct.h",
                       "jdmaster.h",
+                      "jdmerge.h",
                       "jdsample.h",
                       "jmemsys.h",
                       "jpeg_nbits_table.h",
                       "jpegcomp.h",
                       "jsimd.h",
                       "jsimddct.h",
-                      "jversion.h",
-                      "wrppm.h"
+                      "jversion.h"
+                      
 
   # Despite their extensions, these are header files that shouldn't be compiled
   # on their own but should still be present for other files to include.
@@ -155,4 +160,6 @@ Pod::Spec.new do |spec|
                        "jdmrgext.c",
                        "jdmrg565.c",
                        "jccolext.c"
+
+  spec.compiler_flags = ['-fexceptions']
 end
